@@ -14,6 +14,7 @@ from pathlib import Path
 import subprocess
 import platform
 import socket
+import shlex
 
 class SSHTransfer:
     def __init__(self):
@@ -663,6 +664,8 @@ def interactive_mode():
     print("  message <remote_file> <message>")
     print("  list [remote_path]")
     print("  quit")
+    print("\nTip: Use quotes for paths with spaces:")
+    print('  upload "C:\\Users\\John Doe\\file.txt" /remote/path')
     
     while True:
         try:
@@ -677,27 +680,57 @@ def interactive_mode():
             if action == 'quit':
                 break
             elif action == 'upload':
-                args = parts[1].split() if len(parts) > 1 else []
-                if len(args) >= 2:
-                    transfer.upload(args[0], args[1])
+                if len(parts) > 1:
+                    # Use shlex to properly handle quoted paths and spaces
+                    try:
+                        args = shlex.split(parts[1])
+                    except ValueError:
+                        # Fallback to simple split if shlex fails
+                        args = parts[1].split()
+                    if len(args) >= 2:
+                        transfer.upload(args[0], args[1])
+                    else:
+                        print("Usage: upload <local_file> <remote_path>")
+                        print("Tip: Use quotes for paths with spaces: upload \"C:\\Users\\John Doe\\file.txt\" /remote/path")
                 else:
                     print("Usage: upload <local_file> <remote_path>")
             elif action == 'upload-dir':
-                args = parts[1].split() if len(parts) > 1 else []
-                if len(args) >= 2:
-                    transfer.upload_dir(args[0], args[1])
+                if len(parts) > 1:
+                    try:
+                        args = shlex.split(parts[1])
+                    except ValueError:
+                        args = parts[1].split()
+                    if len(args) >= 2:
+                        transfer.upload_dir(args[0], args[1])
+                    else:
+                        print("Usage: upload-dir <local_dir> <remote_dir>")
+                        print("Tip: Use quotes for paths with spaces")
                 else:
                     print("Usage: upload-dir <local_dir> <remote_dir>")
             elif action == 'download':
-                args = parts[1].split() if len(parts) > 1 else []
-                if len(args) >= 2:
-                    transfer.download(args[0], args[1])
+                if len(parts) > 1:
+                    try:
+                        args = shlex.split(parts[1])
+                    except ValueError:
+                        args = parts[1].split()
+                    if len(args) >= 2:
+                        transfer.download(args[0], args[1])
+                    else:
+                        print("Usage: download <remote_file> <local_path>")
+                        print("Tip: Use quotes for paths with spaces")
                 else:
                     print("Usage: download <remote_file> <local_path>")
             elif action == 'download-dir':
-                args = parts[1].split() if len(parts) > 1 else []
-                if len(args) >= 2:
-                    transfer.download_dir(args[0], args[1])
+                if len(parts) > 1:
+                    try:
+                        args = shlex.split(parts[1])
+                    except ValueError:
+                        args = parts[1].split()
+                    if len(args) >= 2:
+                        transfer.download_dir(args[0], args[1])
+                    else:
+                        print("Usage: download-dir <remote_dir> <local_dir>")
+                        print("Tip: Use quotes for paths with spaces")
                 else:
                     print("Usage: download-dir <remote_dir> <local_dir>")
             elif action == 'exec':

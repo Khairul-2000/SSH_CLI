@@ -49,9 +49,18 @@ Check it is listening:
 ss -tlnp | grep sshd
 ```
 
+### Windows (PowerShell as Administrator)
+```powershell
+Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+Start-Service sshd
+Set-Service -Name sshd -StartupType 'Automatic'
+if (!(Get-NetFirewallRule -Name "OpenSSH-Server-In-TCP" -ErrorAction SilentlyContinue)) {
+    New-NetFirewallRule -Name "OpenSSH-Server-In-TCP" -DisplayName "OpenSSH Server (sshd)" -Enabled True -Direction Inbound -Protocol TCP -LocalPort 22 -Action Allow
+}
+```
+
 ### Other OS (Quick Notes)
 - macOS: enable Remote Login
-- Windows: install OpenSSH Server and start `sshd`
 
 ## Usage
 
